@@ -2,11 +2,21 @@ const fs = require('fs');
 const file = `${process.argv[2]}`;
 
 const content = process.argv[3] ? `${process.argv[3]}` : '';
+if (fs.existsSync(file)) {
+    const fileData = fs.readFileSync(file, 'utf8', function (err, data) {
+        if (err) {
+            console.log(err);
+            return;
+        }
+    })
+    console.log("Initial File Content : ", fileData);
+
+}
 fs.appendFile(file, content, (err) => {
     if (err) {
         console.error(err)
         return
     } else {
-        console.log("Sucessfully Written");
+        console.log("Successfully Written");
     }
 })
