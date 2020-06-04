@@ -12,6 +12,10 @@ if (fs.existsSync(file)) {
     console.log("Initial File Content : ", fileData);
 
 }
+else {
+    console.log("File Doesn't Exist");
+
+}
 fs.appendFile(file, content, (err) => {
     if (err) {
         console.error(err)
