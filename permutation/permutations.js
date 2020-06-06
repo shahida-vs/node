@@ -2,7 +2,7 @@ const fs = require('fs');
 const express = require('express');
 const app = express();
 
-const file = `${process.argv[2]}`;
+const file = process.argv[2] ? `${process.argv[2]}` : 'result.txt';
 const str = process.argv[3] ? `${process.argv[3]}` : '';
 
 function stringPermutations(str) {
@@ -30,16 +30,21 @@ function stringPermutations(str) {
 const content = stringPermutations(str);
 
 
-fs.appendFile(file, content, (err) => {
-    if (err) {
-        console.error(err)
-        return
-    } else {
-        console.log("Successfully Written");
-        app.get('/', function (req, res) {
+app.get('/', function (req, res) {
+    fs.writeFile(file, content, (err) => {
+        if (err) {
+            console.error(err)
+            return
+        } else {
+            console.log("Successfully Written");
             res.send({ "message": "Successfully written", "content": `"${content}"` })
-        })
-    }
+        }
+    })
+})
+app.use(function (req, res) {
+    res.type('text/plain');
+    res.status(404);
+    res.send("404 - Page Not Found")
 })
 
 app.listen(3006, function () {
