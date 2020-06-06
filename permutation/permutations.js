@@ -37,7 +37,7 @@ app.get('/permutation/:str?', function (req, res) {
             return
         } else {
             console.log("Successfully Written");
-            res.send({ "message": "Successfully written", "content": `"${content}"` })
+            res.send({ "message": "Successfully written", "content": `${content}` })
         }
     })
 })
