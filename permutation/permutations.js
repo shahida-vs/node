@@ -3,9 +3,9 @@ const express = require('express');
 const app = express();
 
 const file = process.argv[2] ? `${process.argv[2]}` : 'result.txt';
-const str = process.argv[3] ? `${process.argv[3]}` : '';
 
 function stringPermutations(str) {
+    str = str ? str : '';
     let letters = str.split('')
         , results = [[letters.shift()]]
     while (letters.length) {
@@ -27,10 +27,10 @@ function stringPermutations(str) {
         .filter((el, idx, self) => (self.indexOf(el) === idx))
         .sort()
 }
-const content = stringPermutations(str);
 
 
-app.get('/', function (req, res) {
+app.get('/permutation/:str?', function (req, res) {
+    const content = stringPermutations(req.params.str);
     fs.writeFile(file, content, (err) => {
         if (err) {
             console.error(err)
