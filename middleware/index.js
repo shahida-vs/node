@@ -1,9 +1,9 @@
 const express = require('express');
 const app = express();
 
-app.get('/time', function (req, res) {
+app.use(function (req, res) {
     res.type('text/plain');
-    req.tm = new Date();
+    req.tm = new Date().toDateString();
     res.send({ "message": "displaying time", "time": req.tm });
 })
 app.get('/', function (req, res) {
