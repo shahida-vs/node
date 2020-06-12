@@ -5,13 +5,6 @@ const { Item } = require('../models/itemModel')
 const { Category } = require('../models/categoryModel');
 const { Log } = require('../models/logModel');
 
-function connectMongodb() {
-    mongoose.connect('mongodb://localhost/itemDB',
-        { useNewUrlParser: true, useUnifiedTopology: true })
-        .then(() => console.log('Connected to mongodb'))
-        .catch((err) => console.log('Unable to connect'));
-
-}
 
 
 const getItems = async (res) => {
@@ -23,6 +16,10 @@ const getItem = async (itemId, res) => {
     try {
         const item = await Item.find({ _id: itemId })
         console.log("item with id ", item);
+        if (!item.length) {
+            res.send("The item with given item id does not exist")
+            return;
+        }
         res.send(item);
     }
     catch (err) {
@@ -49,12 +46,7 @@ const addItem = async (req, res) => {
         })
         return;
     }
-    const item = new Item({
-        name: req.body.name,
-        author: req.body.author,
-        price: req.body.price,
-        categoryId: req.body.categoryId
-    })
+    const item = new Item(_.pick(req.body, ["name", "author", "price", "categoryId"]))
     try {
         const category = await Category.findOne({ categoryId: req.body.categoryId })
         if (category) {
@@ -99,42 +91,46 @@ const addItem = async (req, res) => {
 const deleteItem = async (req, res) => {
     try {
         const item = await Item.findOne({ _id: req.params.itemId })
-        const category = await Category.findOne({ categoryId: item.categoryId })
+        if (item) {
+            const category = await Category.findOne({ categoryId: item.categoryId })
 
-        let arr = category.items;
-        let element = arr.find((el) => el.itemName === item.name);
-        if (element) {
-            await arr.splice(arr.indexOf(element), 1);
-            element.itemCount = element.itemCount - 1;
-            if (element.itemCount) {
-                await arr.push(element)
+            let arr = category.items;
+            let element = arr.find((el) => el.itemName === item.name);
+            if (element) {
+                await arr.splice(arr.indexOf(element), 1);
+                element.itemCount = element.itemCount - 1;
+                if (element.itemCount) {
+                    await arr.push(element)
+                }
+            } else {
+                console.log("some error!Item which doesn't exist is being deleted");
             }
-        } else {
-            console.log("some error!Item which doesn't exist is being deleted");
+
+            let obj = { itemCount: category.itemCount - 1, items: arr }
+            const updatedCategory = await Category.findOneAndUpdate({ categoryId: item.categoryId }, { $set: obj }, {
+                new: true
+            })
+            const removedItem = await Item.findByIdAndDelete({ _id: req.params.itemId })
+            obj = _.pick(removedItem, ["author", "price", "categoryId"]);
+            obj.operation = "Removed";
+            obj.item = removedItem.name
+            obj.itemId = removedItem._id;
+            const log = new Log({
+                ...obj
+            })
+
+            const addedLog = await log.save();
+
+            res.send({ removedItem, updatedCategory, addedLog });
         }
-
-        let obj = { itemCount: category.itemCount - 1, items: arr }
-        const updatedCategory = await Category.findOneAndUpdate({ categoryId: item.categoryId }, { $set: obj }, {
-            new: true
-        })
-        const removedItem = await Item.findByIdAndDelete({ _id: req.params.itemId })
-        obj = _.pick(removedItem, ["author", "price", "categoryId"]);
-        obj.operation = "Removed";
-        obj.item = removedItem.name
-        obj.itemId = removedItem._id;
-        const log = new Log({
-            ...obj
-        })
-
-        const addedLog = await log.save();
-
-        res.send({ removedItem, updatedCategory, addedLog });
-
+        else {
+            res.send("The item with given item id does not exist");
+        }
     }
     catch (err) {
         console.log("error is ", err);
         res.status(404);
-        res.send('The item with given id does not exist');
+        res.send('The item with given item id does not exist');
     }
 }
-module.exports = { connectMongodb, getItem, getItems, addItem, deleteItem };
+module.exports = { getItem, getItems, addItem, deleteItem };

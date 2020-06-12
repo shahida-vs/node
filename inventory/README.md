@@ -1,10 +1,10 @@
 
 Category Table:
 category model : 
-       name: String, // name of category eg Samsung
-       itemCount: { type: Number, default: 0 }, // total no of items of category Samsung
-       items: [{itemCount:Number,itemName:String}], //itemCount gives the no of items with same name
-       categoryId: String //custom id
+       name: String, // name of category eg Redmi
+       itemCount: { type: Number, default: 0 }, // total no of items in category Samsung
+       items: [{itemCount:Number,itemName:String}], //itemCount gives the no of particular item
+       categoryId: String //custom id eg Rd1
 NOTE - while adding/creating category we have to pass only name of the category and categoryId for it,otherwise error will 
        be thrown.
        categoryId have to be unique.
@@ -15,12 +15,35 @@ we can fetch all the categories - endpoint(/inventory/categories)
 we can create a category - endpoint(/inventory/categories)
 we can update only category name of a category by categoryId - endpoint(/inventory/categories/<categoryId>)
 
+Document from collection categories
+{
+    "_id" : ObjectId("5ee3839f5659f41442bc7de7"),
+    "itemCount" : 4,
+    "items" : [ 
+        {
+            "itemName" : "Note 5",
+            "itemCount" : 1
+        },
+        {
+            "itemName" : "Note 8",
+            "itemCount" : 3
+        }
+    ],
+    "name" : "Redmi",
+    "categoryId" : "Rd1",
+    "__v" : 0
+}
+
+
+
+
+
 
 
 
 Item Table:
 item model :
-    name: String,//name of the item
+    name: String,//name of the item eg Note 5
     author: String,//person who added item to the table
     categoryId: String,//id of the category to which the item belongs to
     price: Number//price of the item
@@ -33,6 +56,23 @@ We can fetch all items - endpoint(/inventory/items)
 We can fetch a particular item by item id - endpoint(/inventory/items/<_id>)
 we can create an item - endpoint(/inventory/items)
 we can delete an item by item id - endpoint(/inventory/items/<_id>)
+
+
+Document from collection items
+{
+    "_id" : ObjectId("5ee38606cd62d6146b6b774d"),
+    "name" : "Note 5",
+    "author" : "Saara",
+    "price" : 7000,
+    "categoryId" : "Rd1",
+    "__v" : 0
+}
+
+
+
+
+
+
 
 
 Log Table:
@@ -52,11 +92,28 @@ we can fetch a log with item id - endpoint(/inventory/logs/item/<_id>) // here <
        result in all the logs of a particular item .Thus, we would be able to know when item was added and when it was removed
 we can delete a log using log id - endpoint(/inventory/logs/<_id>)
 
+Document from collection logs
+{
+    "_id" : ObjectId("5ee38606cd62d6146b6b774e"),
+    "author" : "Saara",
+    "price" : 7000,
+    "categoryId" : "Rd1",
+    "operation" : "Added",
+    "itemId" : "5ee38606cd62d6146b6b774d",
+    "item" : "Note 5",
+    "date" : ISODate("2020-06-12T13:41:26.251Z"),
+    "__v" : 0
+}
+
+
+
+
+
 
 
 what more could be added :
   Delete a category if no item exists corresponding to it in item table
   Update an item - make required changes in category table of removing it from a particular category and adding it to the
-                   new one(if categoryId is to be updated).Log table will also have nw operation value as "Modified"
+                   new one(if categoryId is to be updated).Log table will also have new operation value as "Modified"
   Delete a log by item id - since we might want to untrack all logs of a particular item
 

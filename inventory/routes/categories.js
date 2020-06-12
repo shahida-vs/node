@@ -4,7 +4,6 @@ const db = require('../middleware/categoryDatabase');
 
 
 
-db.connectMongodb();
 
 router.get('/', (req, res) => {
     db.getCategories(res);

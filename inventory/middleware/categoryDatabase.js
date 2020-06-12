@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const joi = require('joi');
 const { Category } = require('../models/categoryModel')
+const _ = require('lodash');
 
 function connectMongodb() {
     mongoose.connect('mongodb://localhost/categoryDB',
@@ -20,6 +21,9 @@ const getCategory = async (categoryId, res) => {
     try {
         const category = await Category.find({ categoryId: categoryId })
         console.log("category with id ", category);
+        if (!category.length) {
+            res.send('The category with given id does not exist');
+        }
         res.send(category);
     }
     catch (err) {
@@ -53,12 +57,7 @@ const addCategory = async (req, res) => {
         })
         return;
     }
-    category = new Category({
-        name: req.body.name,
-        categoryId: req.body.categoryId,
-        items: req.body.items,
-        itemCount: req.body.itemCount
-    })
+    category = new Category(_.pick(req.body, ["name", "categoryId", "items", "itemCount"]))
     const result = await category.save();
     res.send(result);
 }

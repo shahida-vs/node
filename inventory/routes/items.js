@@ -4,8 +4,6 @@ const db = require('../middleware/itemsDatabase');
 
 
 
-// db.connectMongodb();
-
 router.get('/', (req, res) => {
     db.getItems(res);
 });

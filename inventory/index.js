@@ -3,7 +3,9 @@ const app = express();
 const itemsDb = require('./routes/items');
 const categoryDb = require('./routes/categories');
 const trackDb = require('./routes/tracker');
+const db = require('./middleware/categoryDatabase')
 
+db.connectMongodb();
 app.use(express.json());
 app.use('/inventory/categories', categoryDb)
 app.use('/inventory/items', itemsDb)
