@@ -4,7 +4,7 @@ const { Category } = require('../models/categoryModel')
 const _ = require('lodash');
 
 function connectMongodb() {
-    mongoose.connect('mongodb://localhost/categoryDB',
+    mongoose.connect('mongodb://localhost/inventoryDB',
         { useNewUrlParser: true, useUnifiedTopology: true })
         .then(() => console.log('Connected to mongodb'))
         .catch((err) => console.log('Unable to connect'));
