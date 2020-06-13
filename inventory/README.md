@@ -90,6 +90,8 @@ We can fetch all logs - endpoint(/inventory/logs)
 we can fetch a log with log id - endpoint(/inventory/logs/<_id>) //here <_id> is log's unique id
 we can fetch a log with item id - endpoint(/inventory/logs/item/<_id>) // here <_id> is item's unique id. This would 
        result in all the logs of a particular item .Thus, we would be able to know when item was added and when it was removed
+we can fetch a log with categoryId - endpoint(/inventory/logs/category/<categoryId>) // here <categoryId> is category's 
+       id. This would result in all the logs of all items in a particular category .Thus, we would be able to track the inventory
 we can delete a log using log id - endpoint(/inventory/logs/<_id>)
 
 Document from collection logs
